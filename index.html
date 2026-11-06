@@ -376,7 +376,7 @@ const ok=t=>({t:'ok',x:t}), warn=t=>({t:'warn',x:t}), stop=t=>({t:'stop',x:t}), 
 
 /* ---------- สัตว์เล็ก ---------- */
 const SMALL=[
- {g:'วัคซีน', id:'rabies', name:'วัคซีนพิษสุนัขบ้า', brand:'Rabies', route:'SC ปลายขา', basis:'1 ml/ตัว',
+ {g:'วัคซีน', id:'rabies', name:'วัคซีนพิษสุนัขบ้า', brand:'Rabies', route:'SC', basis:'1 ml/ตัว',
   calc(p){ const n=[];
     let st='ok';
     if(p.preg){st='stop';n.push(stop('ไม่ทำในสัตว์ท้อง (เสี่ยงแท้ง)'));}
@@ -384,7 +384,7 @@ const SMALL=[
     n.push(info(`ดูดยาด้วยเข็ม 21G (เขียว) ฉีดด้วย ${p.sp==='cat'?'24G (ม่วง)':'23G (ฟ้า)'} ใช้ไซริงค์ 3 ml ดูดให้หมดขวด ถ้าได้น้อยกว่า 0.8 ml ให้ดูดใหม่`));
     n.push(info('ลูกสัตว์เริ่มฉีด 3 เดือน กระตุ้นซ้ำ 2–4 สัปดาห์ แล้วกระตุ้นทุกปี'));
     return {v:1,unit:'ml',st,n};}},
- {g:'ถ่ายพยาธิ', id:'pyrl', name:'Pyrantel ชนิดน้ำ', brand:'หมาตัวเล็ก แมว', route:'PO ป้อนปาก', needW:true,
+ {g:'ถ่ายพยาธิ', id:'pyrl', name:'Pyrantel ชนิดน้ำ', brand:'หมาตัวเล็ก แมว', route:'PO', needW:true,
   basis:'≤2 kg ให้ 0.4 ml · >2 kg ให้ 5 mg/kg = BW × 0.2',
   calc(p){ const n=[];
     const v=p.w<=2?0.4:p.w*0.2;
@@ -419,10 +419,6 @@ const SMALL=[
     return {v:stock*10,unit:'ml',alt:'ปริมาตรหลังเจือจาง',st:'ok',n:[
       info(`เริ่มด้วย low dose 0.01 mg/kg (ดูแถวบน) ทุก 3–5 นาที ใช้ high dose เมื่อ CPA นาน · ยาเดิม ${f(stock)} ml`),
       info('CAB: กดอก 100–120 ครั้ง/นาที ลึก ⅓–½ ของอก กด 30 เป่า 2 สลับคนกดทุก 2 นาที')]};}},
- {g:'ยาฉุกเฉิน · แพ้วัคซีน', id:'nsss', name:'NSS อัตราช็อก', route:'IV ปล่อย flow', needW:true,
-  basis:p=>p.sp==='cat'?'แมว 70 ml/kg/hr':'สุนัข 90 ml/kg/hr',
-  calc(p){ const r=p.sp==='cat'?70:90;
-    return {v:p.w*r,unit:'ml/hr',st:'ok',n:[warn('คู่มือเขียนหน่วยเป็น ml/hr ที่นี่คิดเป็น ml/kg/hr ยืนยันกับพี่หมอก่อนตั้งอัตรา')]};}},
  {g:'ลดไข้ · ลดอักเสบ', id:'tolfs', name:'Tolfenamic acid', brand:'40 mg/ml', route:'', basis:'4 mg/kg', needW:true,
   calc(p){ return {v:p.w*4/40,unit:'ml',st:'ok',route:p.sp==='cat'?'SC':'IM หรือ SC',n:[
     info('มีแค่บางโม · ไข้ >103 °F ให้ทำ physical cooling ก่อน (ผ้าชุบน้ำเช็ดย้อนขน เปิดพัดลม) ห้ามใช้น้ำแข็ง'),
@@ -435,22 +431,20 @@ function pregLact(p,n){ let s=null; if(p.preg){s='stop';n.push(stop('ไม่�
 function ageCheck(p,min,n,msg){ if(p.age!==''&&p.age<min){n.push(stop(msg));return 'stop';} return null; }
 
 const LARGE=[
- {g:'วัคซีน', id:'fmd', name:'วัคซีนปากและเท้าเปื่อย', brand:'FMD O, A, Asia1', route:'SC แผงคอ', basis:'2 ml/ตัว',
+ {g:'วัคซีน', id:'fmd', name:'วัคซีนปากและเท้าเปื่อย', brand:'FMD O, A, Asia1', route:'SC', basis:'2 ml/ตัว',
   calc(p){ const n=[]; let st='ok';
     st=ageCheck(p,4,n,'อายุต่ำกว่า 4 เดือน ยังไม่ฉีด (ตัวผอมหรือแคระแกร็นรอถึง 6 เดือน)')||st;
     st=pregLact(p,n)||st;
     n.push(info(`ไซริงค์ 5 ml · ${needle(p,true)} · เก็บ 2–8 °C ห้ามแช่แข็ง`));
     n.push(info('ครั้งแรกกระตุ้นซ้ำ 1 เดือน (คู่มือค่าย 4 สัปดาห์) · โคเนื้อ/กระบือ 2 ครั้ง/ปี โคนม 3 ครั้ง/ปี · ป่วย FMD ปีนี้ห้ามฉีด'));
     return {v:2,unit:'ml',st,n};}},
- {g:'วัคซีน', id:'lsdk', name:'วัคซีนลัมปีสกิน (เชื้อเป็น)', brand:'ยังไม่สรุปยี่ห้อ', route:'SC แผงคอ',
-  opts:[{k:'d',l:'ขนาด',c:[['1','1 ml/ตัว (สไลด์อาจารย์ KEMIN)'],['2','2 ml/ตัว (คู่มือค่าย)']],d:'1'}],
-  basis:p=>`${O('lsdk','d','1')} ml/ตัว`,
+ {g:'วัคซีน', id:'lsdk', name:'วัคซีนลัมปีสกิน (เชื้อเป็น)', brand:'ยังไม่สรุปยี่ห้อ', route:'SC',
+  basis:'1 ml/ตัว',
   calc(p){ const n=[]; let st='ok';
     st=pregLact(p,n)||st;
-    n.push(warn('ยังไม่สรุปยี่ห้อ เลือกขนาดให้ตรงกับฉลากขวดที่ได้รับจริง: สไลด์อาจารย์ (KEMIN) 1 ml · คู่มือค่าย 2 ml'));
     n.push(info('ข้อมูลจากสไลด์ KEMIN: ฉีดได้ทุกอายุ ลูกที่แม่ได้วัคซีนเริ่ม 3 เดือน · กระตุ้นทุก 5–6 เดือน · คอกรอบข้างต้องไม่มีตัวป่วย · เคยป่วยต้องหายเกิน 6 เดือน'));
     n.push(info(`ไซริงค์ 5 ml · ${needle(p,true)} · ภูมิเริ่ม 10 วัน สูงสุด 3 สัปดาห์`));
-    return {v:+O('lsdk','d','1'),unit:'ml',st,n,d:0};}},
+    return {v:1,unit:'ml',st,n,d:0};}},
  {g:'วัคซีน', id:'lsdd', name:'วัคซีนลัมปีสกิน กรมปศุสัตว์', brand:'เชื้อตาย สื่อน้ำมัน', route:'IM', basis:'2 ml/ตัว',
   calc(p){ const n=[]; let st='ok';
     st=ageCheck(p,4,n,'อายุต่ำกว่า 4–5 เดือน ยังไม่ฉีด')||st;
@@ -462,7 +456,7 @@ const LARGE=[
     st=ageCheck(p,4,n,'อายุต่ำกว่า 4 เดือน ยังไม่ฉีด')||st;
     n.push(info('เข็ม 18G ยาว 1.5 นิ้ว · กระตุ้นปีละครั้ง · อาจบวมตรงที่ฉีด · เน้นในกระบือ'));
     return {v:1,unit:'ml',st,n};}},
- {g:'ถ่ายพยาธิ', id:'alb', name:'Albendazole', brand:'Abentel', route:'PO กรอกปาก', needW:true,
+ {g:'ถ่ายพยาธิ', id:'alb', name:'Albendazole', brand:'Abentel', route:'PO', needW:true,
   opts:[{k:'c',l:'ความเข้มข้น',c:[['112.5','112.5 mg/ml (แกลลอน)'],['150','150 mg/ml (ขวดเล็กแจกเจ้าของ)']],d:'112.5'},
         {k:'d',l:'ขนาด',c:[['7.5','7.5 mg/kg'],['10','10 mg/kg (พยาธิใบไม้ตับ)'],['15','15 mg/kg (พยาธิใบไม้ตับ)']],d:'7.5'}],
   basis:p=>`BW × ${O('alb','d','7.5')} ÷ ${O('alb','c','112.5')}`,
@@ -507,10 +501,6 @@ const LARGE=[
     return {v,unit:'ml',st:'ok',alt:'IM ไม่ต้องเจือจาง',n:[
       warn(`ถ้าต้องให้ IV (CPR, ความดันตก, คลำชีพจรไม่ได้) ต้องเจือจาง 1:9 เป็น 0.1 mg/ml ปริมาตรจะเป็น 10 เท่า = ${f(v*10)} ml`),
       stop('Anaphylaxis: CPM + Dexa + IV load + Adrenaline IM แล้วเรียกอาจารย์/พี่หมอ')]};}},
- {g:'ยาฉุกเฉิน · แพ้วัคซีน', id:'nssl', name:'NSS อัตราช็อก', route:'IV jugular · catheter 18G', basis:'40 ml/kg/hr', needW:true,
-  calc(p){ return {v:p.w*40,unit:'ml/hr',st:'ok',n:[
-    info(`ถุงละ 1000 ml = ${f(p.w*40/1000,1)} ถุง/ชม. · หรือใช้ catheter ใหญ่สุด free flow`),
-    info(`surgical rate 4–6 ml/kg/hr = ${f(p.w*4)}–${f(p.w*6)} ml/hr · maintenance 50 ml/kg/day = ${f(p.w*50)} ml/วัน`)]};}},
  {g:'ลดไข้ · ลดอักเสบ', id:'buta', name:'Butasyl', brand:'Phenylbutazone 186 mg/ml', route:'slow IV', needW:true,
   opts:[{k:'d',l:'ขนาด (mg/kg)',num:true,min:4,max:8,d:'5'}],
   basis:p=>`${O('buta','d','5')} mg/kg (ช่วง 4–8)`,
